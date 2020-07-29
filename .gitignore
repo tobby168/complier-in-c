@@ -1,2 +1,4 @@
 .vscode
 scanner
+parser
+*.plist
