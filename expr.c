@@ -34,20 +34,40 @@ static struct ASTnode *primary(void) {
   }
 }
 
-struct ASTnode *binexpr(void) {
-  struct ASTnode *n, *left, *right;
-  int nodetype;
+// Operator precedence for each token
+static int OpPrec[] = { 0, 10, 10, 20, 20,    0 };
+//                     EOF  +   -   *   /  INTLIT
+
+// Check that we have a binary operator and
+// return its precedence.
+static int op_precedence(int tokentype) {
+  int prec = OpPrec[tokentype];
+  if (prec == 0) {
+    fprintf(stderr, "syntax error on line %d, token %d\n", Line, tokentype);
+    exit(1);
+  }
+  return (prec);
+}
+
+struct ASTnode *binexpr(int ptp) {
+  struct ASTnode *left, *right;
+  int tokentype;
 
   left = primary();
   
-  if (Token.token == T_EOF) {
+  tokentype = Token.token;
+  if (tokentype == T_EOF) {
     return left;
   }
 
-  nodetype = arithop(Token.token);
+  while (op_precedence(tokentype) > ptp) {
+    scan(&Token);
+    right = binexpr(OpPrec[tokentype]);
+    left = mkastnode(arithop(tokentype), left, right, 0);
+    tokentype = Token.token;
+    if (tokentype == T_EOF)
+      break;
+  }
 
-  scan(&Token);
-  right = binexpr();
-  n = mkastnode(nodetype, left, right, 0);
-  return n;
+  return left;
 }

@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
   }
 
   scan(&Token);			// Get the first token from the input
-  n = binexpr();		// Parse the expression in the file
+  n = binexpr(0);		// Parse the expression in the file
   printf("%d\n", interpretAST(n));
 
   if (fclose(Infile) == EOF) {

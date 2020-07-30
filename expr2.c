@@ -80,6 +80,6 @@ struct ASTnode *additive_expr(void) {
   return left;
 }
 
-struct ASTnode *binexpr() {
+struct ASTnode *binexpr(int ptp) {
   return (additive_expr());
 }
