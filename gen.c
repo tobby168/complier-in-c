@@ -2,7 +2,12 @@
 #include "data.h"
 #include "decl.h"
 
-static int genAST(struct ASTnode *n) {
+void genpreamble()        { cgpreamble(); }
+void genpostamble()       { cgpostamble(); }
+void genfreeregs()        { freeall_registers(); }
+void genprintint(int reg) { cgprintint(reg); }
+
+int genAST(struct ASTnode *n) {
   int leftreg, rightreg;
 
   if (n->left)
