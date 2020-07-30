@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include "defs.h"
+#include "data.h"
+#include "decl.h"
 
 // List of AST operators
 static char *ASTop[] = { "+", "-", "*", "/" };
@@ -33,7 +34,7 @@ int interpretAST(struct ASTnode *n) {
       return (n->intvalue);
     default:
       fprintf(stderr, "Unknown AST operator %d\n", n->op);
-      exit(1);
+      exit(EXIT_FAILURE);
   }
   
 }

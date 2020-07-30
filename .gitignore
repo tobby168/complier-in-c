@@ -2,4 +2,7 @@
 scanner
 parser
 parser2
+comp1
+out
+out.s
 *.plist
