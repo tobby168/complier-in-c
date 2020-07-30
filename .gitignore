@@ -1,4 +1,5 @@
 .vscode
 scanner
 parser
+parser2
 *.plist
