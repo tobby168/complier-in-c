@@ -73,6 +73,9 @@ static int keyword(char *s) {
       if (!strcmp(s, "print"))
 	      return T_PRINT;
       break;
+    case 'i':
+      if (!strcmp(s, "int"))
+        return T_INT;
   }
   return 0;
 }
@@ -99,6 +102,9 @@ int scan(struct token *t) {
     case ';':
       t->token = T_SEMI;
       break;
+    case '=':
+      t->token = T_EQUALS;
+      break;
 
     default:
       if (isdigit(c)) {
@@ -108,12 +114,13 @@ int scan(struct token *t) {
       }
       else if (isalpha(c) || c == '_') {
         scanident(c, Text, TEXTLEN);
+        // if no keyword identidied, keyword() return 0
         if ((tokentype = keyword(Text))) {
           t->token = tokentype;
           break;
         }
-        printf("Unrecognised symbol %s on line %d\n", Text, Line);
-	      exit(EXIT_FAILURE);
+        t->token = T_IDENT;
+        break;
       }
 
       printf("Unrecognised character \'%c\' on line %d\n", c, Line);

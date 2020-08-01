@@ -22,16 +22,25 @@ int arithop(int tok) {
 // AST node representing it.
 static struct ASTnode *primary(void) {
   struct ASTnode *n;
+  int id;
 
   switch (Token.token) {
     case T_INTLIT:
       n = mkastleaf(A_INTLIT, Token.intvalue);
-      scan(&Token);
-      return n;
+      break;
+
+    case T_IDENT:
+      if ((id = findglob(Text)) == -1)
+        fatals("Unknown variable", Text);
+      n = mkastleaf(A_IDENT, id);
+      break;
+
     default:
-      fprintf(stderr, "syntax error on line %d\n", Line);
-      exit(EXIT_FAILURE);
+      fatald("Syntax error, token", Token.token);
   }
+
+  scan(&Token);
+  return n;
 }
 
 // Operator precedence for each token

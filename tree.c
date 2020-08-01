@@ -15,7 +15,8 @@ struct ASTnode *mkastnode(int operator, struct ASTnode *left,
   n->op = operator;
   n->left = left;
   n->right = right;
-  n->intvalue = intvalue;
+  n->v.intvalue = intvalue;
+  
   return n;
 }
 

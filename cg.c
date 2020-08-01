@@ -31,7 +31,7 @@ static void free_register(int reg)
   freereg[reg]= 1;
 }
 
-int cgload(int value) {
+int cgloadint(int value) {
   int r = alloc_register();
   fprintf(Outfile, "\tmovq\t$%d, %s\n", value, reglist[r]);
   return r;
@@ -107,4 +107,25 @@ void cgpostamble()
 	"\tpopq	%rbp\n"
 	"\tret\n",
   Outfile);
+}
+
+void cgglobsym(char *sym) {
+  fprintf(Outfile, "\t.comm\t%s,8,8\n", sym);
+}
+
+// Load a value from a variable into a register.
+// Return the number of the register
+int cgloadglob(char *identifier) {
+  // Get a new register
+  int r = alloc_register();
+
+  // Print out the code to initialise it
+  fprintf(Outfile, "\tmovq\t%s(\%%rip), %s\n", identifier, reglist[r]);
+  return (r);
+}
+
+// Store a register's value into a variable
+int cgstorglob(int r, char *identifier) {
+  fprintf(Outfile, "\tmovq\t%s, %s(\%%rip)\n", reglist[r], identifier);
+  return (r);
 }

@@ -1,0 +1,39 @@
+#include "defs.h"
+#include "data.h"
+#include "decl.h"
+
+static int Globs = 0;		// Position of next free global symbol slot
+
+// Determine if the symbol s is in the global symbol table. 
+// Return its slot position or -1 if not found.
+int findglob(char *s) {
+  for (int i = 0; i < Globs; i++) {
+    if (*Gsym[i].name == *s && !strcmp(Gsym[i].name, s)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+// Get the position of a new global symbol slot, 
+// or die if we've run out of positions.
+static int newglob(void) {
+  int p;
+  if ((p = Globs++) >= NSYMBOLS) {
+    fatal("Too many global symbols");
+  }
+  return p;
+}
+
+// Add a global symbol to the symbol table. 
+// Return the slot number in the symbol table.
+int addglob(char *name) {
+  int p;
+
+  if ((p = findglob(name)) != -1)
+    return p;
+
+  p = newglob();
+  Gsym[p].name = strdup(name);
+  return p;
+}

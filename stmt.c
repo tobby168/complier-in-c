@@ -3,27 +3,67 @@
 #include "decl.h"
 
 // statements: statement
-//      | statement statements
-//      ;
-//
-// statement: 'print' expression ';'
+//      |      statement statements
 //      ;
 
-void statements(void) {
+// statement: 'print' expression ';'
+//      |     'int'   identifier ';'
+//      |     identifier '=' expression ';'
+//      ;
+
+// identifier: T_IDENT
+//      ;
+
+void print_statement() {
   struct ASTnode *tree;
   int reg;
+  
+  match(T_PRINT, "print");
+  tree = binexpr(0);
+  reg = genAST(tree, -1);
+  genprintint(reg);
+  genfreeregs();
 
-  while (1) {
-    match(T_PRINT, "print");
+  semi();
+}
 
-    tree = binexpr(0);
-    reg = genAST(tree);
-    genprintint(reg);
-    genfreeregs();
+void assignment_statement() {
+  struct ASTnode *left, *right, *tree;
+  int id;
 
-    semi();
-    if (Token.token == T_EOF)
-      return;
+  ident();
+  if ((id = findglob(Text)) == -1) {
+    fatals("Undeclared variable", Text);
   }
+  right = mkastleaf(A_LVIDENT, id);
 
+  match(T_EQUALS, "=");
+
+  left = binexpr(0);
+
+  tree = mkastnode(A_ASSIGN, left, right, 0);
+  genAST(tree, -1);
+  genfreeregs();
+
+  semi();
+}
+
+void statements(void) {
+  while (1) {
+    switch (Token.token) {
+    case T_PRINT:
+      print_statement();
+      break;
+    case T_INT:
+      var_declaration();
+      break;
+    case T_IDENT:
+      assignment_statement();
+      break;
+    case T_EOF:
+      return;
+    default:
+      fatald("Syntax error, token", Token.token);
+    }
+  }
 }

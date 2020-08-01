@@ -6,40 +6,38 @@ void genpreamble()        { cgpreamble(); }
 void genpostamble()       { cgpostamble(); }
 void genfreeregs()        { freeall_registers(); }
 void genprintint(int reg) { cgprintint(reg); }
+void genglobsym(char *s)  { cgglobsym(s); }
 
-int genAST(struct ASTnode *n) {
+
+int genAST(struct ASTnode *n, int reg) {
   int leftreg, rightreg;
 
   if (n->left)
-    leftreg = genAST(n->left);
+    leftreg = genAST(n->left, -1);
   if (n->right)
-    rightreg = genAST(n->right);
+    rightreg = genAST(n->right, leftreg);
   
   switch (n->op) {
     case A_ADD:
-      return cgadd(leftreg, rightreg);
+      return (cgadd(leftreg, rightreg));
     case A_SUBTRACT:
-      return cgsub(leftreg, rightreg);
+      return (cgsub(leftreg, rightreg));
     case A_MULTIPLY:
-      return cgmul(leftreg, rightreg);
+      return (cgmul(leftreg, rightreg));
     case A_DIVIDE:
-      return cgdiv(leftreg, rightreg);
+      return (cgdiv(leftreg, rightreg));
     case A_INTLIT:
-      return cgload(n->intvalue);
+      return (cgloadint(n->v.intvalue));
+    case A_IDENT:
+      return (cgloadglob(Gsym[n->v.id].name));
+    case A_LVIDENT:
+      return (cgstorglob(reg, Gsym[n->v.id].name));
+    case A_ASSIGN:
+      return rightreg;
+
     default:
-      fprintf(stderr, "Unknown AST operator %d\n", n->op);
-      exit(EXIT_FAILURE);
+      fatald("Unknown AST operator", n->op);
   }
-  
+  return -1;
 }
 
-void generatecode(struct ASTnode *n) {
-  int reg;
-
-  cgpreamble();
-  reg= genAST(n);
-  cgprintint(reg);
-  cgpostamble();
-
-  return;
-}
