@@ -3,6 +3,7 @@
 #include "decl.h"
 
 struct ASTnode *mkastnode(int operator, struct ASTnode *left, 
+                          struct ASTnode *mid,
                           struct ASTnode *right, int intvalue) {
   struct ASTnode *n;
 
@@ -14,16 +15,19 @@ struct ASTnode *mkastnode(int operator, struct ASTnode *left,
 
   n->op = operator;
   n->left = left;
+  n->mid = mid;
   n->right = right;
   n->v.intvalue = intvalue;
   
   return n;
 }
 
-struct ASTnode *mkastleaf(int operator, int intvalue) {
-  return mkastnode(operator, NULL, NULL, intvalue);
+// Make an AST leaf node
+struct ASTnode *mkastleaf(int op, int intvalue) {
+  return (mkastnode(op, NULL, NULL, NULL, intvalue));
 }
 
-struct ASTnode *mkastunary(int operator, struct ASTnode *left, int intvalue) {
-  return (mkastnode(operator, left, NULL, intvalue));
+// Make a unary AST node: only one child
+struct ASTnode *mkastunary(int op, struct ASTnode *left, int intvalue) {
+  return (mkastnode(op, left, NULL, NULL, intvalue));
 }

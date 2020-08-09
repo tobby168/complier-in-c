@@ -13,7 +13,7 @@ static void init() {
 }
 
 int main(int argc, char* argv[]) {
-  struct ASTnode *n;
+  struct ASTnode *tree;
 
   init();
   
@@ -30,7 +30,8 @@ int main(int argc, char* argv[]) {
 
   scan(&Token);			// Get the first token from the input
   genpreamble();
-  statements();
+  tree = compound_statement();
+  genAST(tree, NOREG, 0);
   genpostamble();
 
   if (fclose(Infile) == EOF) {
