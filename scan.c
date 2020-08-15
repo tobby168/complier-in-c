@@ -80,6 +80,9 @@ static int keyword(char *s) {
     case 'p':
       if (!strcmp(s, "print"))
 	      return T_PRINT;
+    case 'w':
+      if (!strcmp(s, "while"))
+        return T_WHILE;
       break;
   }
   return 0;
